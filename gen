@@ -215,7 +215,7 @@ program
     });
 
 program
-    .command('container [name]')
+    .command('reducer [name]')
     .description('Generates a reducer file with test spec')
     .action(name => {
         if (typeof name === 'undefined') {
