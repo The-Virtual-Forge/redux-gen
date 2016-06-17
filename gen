@@ -70,6 +70,14 @@ function createContainer(name, done) {
     }, done);
 }
 
+function createReducer(name, done) {
+    createFile({
+        name,
+        filePath: `../../app/reducers/${lowerCaseFirstLetter(name)}.js`,
+        templateFile: 'reducer.js',
+    }, done);
+}
+
 function createTest(type, name, done) {
     if (type !== 'actions') {
         type += 's';
@@ -186,7 +194,7 @@ program
     .description('Generates a container file with test spec')
     .action(name => {
         if (typeof name === 'undefined') {
-            console.error('Please specify a name for your component');
+            console.error('Please specify a name for your container');
             process.exit(1);
         }
 
@@ -196,6 +204,31 @@ program
             },
             function(done) {
                 createTest('container', name, done);
+            }
+        ], (err) => {
+            if (err) {
+                console.error("An error occurred whilst generating your files: "+err);
+                process.exit(1);
+            }
+            console.log('Files generated successfully!');
+        });
+    });
+
+program
+    .command('container [name]')
+    .description('Generates a reducer file with test spec')
+    .action(name => {
+        if (typeof name === 'undefined') {
+            console.error('Please specify a name for your reducer');
+            process.exit(1);
+        }
+
+        async.series([
+            function(done) {
+                createReducer(name, done);
+            },
+            function(done) {
+                createTest('reducer', name, done);
             }
         ], (err) => {
             if (err) {
