@@ -1,0 +1,214 @@
+#!/usr/bin/env node
+
+const program = require('commander');
+const fs = require('fs');
+const async = require('async');
+const template = require('lodash.template');
+
+var cmdValue;
+var nameValue;
+
+const DIR_MASK = 0777;
+
+const acceptableCommands = ['component', 'container', 'reducer', 'actions', 'test'];
+
+function lowerCaseFirstLetter(str) {
+    return str.charAt(0).toLowerCase() + str.slice(1);
+}
+
+function upperCaseFirstLetter(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function createFile(config, done) {
+    fs.readFile(config.templateFile, (err, data) => {
+        if (err) {
+            console.warn("An error occured whilst opening the template file. Output file will be empty");
+            data = "";
+        }
+
+        const compiledTemplate = template(data);
+        console.log(`Creating ${config.filePath}...`);
+        fs.writeFile(config.filePath, compiledTemplate({
+            nameUpper: upperCaseFirstLetter(config.name),
+            nameLower: lowerCaseFirstLetter(config.name),
+        }), done);
+    });
+}
+
+function createComponent(dir, name, done) {
+    createFile({
+        name,
+        filePath: `${dir}/${upperCaseFirstLetter(name)}.js`,
+        templateFile: 'generatorTemplates/component.js',
+    }, done);
+}
+
+function createCSS(dir, name, done) {
+    createFile({
+        name,
+        filePath: `${dir}/${upperCaseFirstLetter(name)}.css`,
+        templateFile: 'generatorTemplates/css.js',
+    }, done);
+}
+
+function createActions(name, done) {
+    createFile({
+        name,
+        filePath: `app/actions/${lowerCaseFirstLetter(name)}.js`,
+        templateFile: 'generatorTemplates/actions.js',
+    }, done);
+}
+
+function createContainer(name, done) {
+    createFile({
+        name,
+        filePath: `app/containers/${upperCaseFirstLetter(name)}.js`,
+        templateFile: 'generatorTemplates/container.js',
+    }, done);
+}
+
+function createTest(type, name, done) {
+    if (type !== 'actions') {
+        type += 's';
+    }
+
+    createFile({
+        name,
+        filePath: `test/${type}/${upperCaseFirstLetter(name)}.spec.js`,
+        templateFile: 'generatorTemplates/test.js',
+    }, done);
+}
+
+program
+    .version('1.0.0');
+
+program
+    .command('test [type] [name]')
+    .description('Generates a test file')
+    .action((type, name) => {
+        const testTypes = ['component', 'reducer', 'container', 'actions'];
+
+        if (typeof type === 'undefined') {
+            console.error('Please specify the type of test');
+            process.exit(1);
+        }
+
+        if (testTypes.indexOf(type) === -1) {
+            console.error(`type must be one of ${testTypes.join('|')}`);
+            process.exit(1);
+        }
+
+        if (typeof name === 'undefined') {
+            console.error('Please specify a name for your component');
+            process.exit(1);
+        }
+
+        createTest(type, name, err => {
+            if (err) {
+                console.error('An error occurred whilst saving the file: ' + err);
+                process.exit(1);
+            }
+
+            console.log('Test generated!');
+        });
+    });
+
+program
+    .command('component [name]')
+    .description('Generates a component with matching CSS, actions & test specs')
+    .action(name => {
+        if (typeof name === 'undefined') {
+            console.error('Please specify a name for your component');
+            process.exit(1);
+        }
+
+        const dir = `app/components/${upperCaseFirstLetter(name)}`;
+
+        async.series([
+            function(done) {
+                console.log(`Creating ${dir}...`);
+                fs.mkdir(dir, DIR_MASK, done);
+            },
+            function(done) {
+                createComponent(dir, name, done);
+            },
+            function(done) {
+                createCSS(dir, name, done);
+            },
+            function(done) {
+                createActions(name, done);
+            },
+            function(done) {
+                createTest('component', name, done);
+            },
+            function(done) {
+                createTest('actions', name, done);
+            }
+        ], (err) => {
+            if (err) {
+                console.error("An error occurred whilst generating your files: "+err);
+                process.exit(1);
+            }
+            console.log('Files generated successfully!');
+        });
+    });
+
+program
+    .command('actions [name]')
+    .description('Generates an actions file with test spec')
+    .action(name => {
+        if (typeof name === 'undefined') {
+            console.error('Please specify a name for your component');
+            process.exit(1);
+        }
+
+        async.series([
+            function(done) {
+                createActions(name, done);
+            },
+            function(done) {
+                createTest('actions', name, done);
+            }
+        ], (err) => {
+            if (err) {
+                console.error("An error occurred whilst generating your files: "+err);
+                process.exit(1);
+            }
+            console.log('Files generated successfully!');
+        });
+    });
+
+program
+    .command('container [name]')
+    .description('Generates a container file with test spec')
+    .action(name => {
+        if (typeof name === 'undefined') {
+            console.error('Please specify a name for your component');
+            process.exit(1);
+        }
+
+        async.series([
+            function(done) {
+                createContainer(name, done);
+            },
+            function(done) {
+                createTest('container', name, done);
+            }
+        ], (err) => {
+            if (err) {
+                console.error("An error occurred whilst generating your files: "+err);
+                process.exit(1);
+            }
+            console.log('Files generated successfully!');
+        });
+    });
+
+program
+    .command('help')
+    .description('Display help text')
+    .action(() => {
+        program.outputHelp();
+    });
+
+program.parse(process.argv);
