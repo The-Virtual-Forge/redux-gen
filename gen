@@ -55,7 +55,7 @@ function createCSS(dir, name, done) {
 function createActions(name, done) {
     createFile({
         name,
-        filePath: `app/actions/${lowerCaseFirstLetter(name)}.js`,
+        filePath: `../../app/actions/${lowerCaseFirstLetter(name)}.js`,
         templateFile: 'generatorTemplates/actions.js',
     }, done);
 }
@@ -63,7 +63,7 @@ function createActions(name, done) {
 function createContainer(name, done) {
     createFile({
         name,
-        filePath: `app/containers/${upperCaseFirstLetter(name)}.js`,
+        filePath: `../../app/containers/${upperCaseFirstLetter(name)}.js`,
         templateFile: 'generatorTemplates/container.js',
     }, done);
 }
@@ -75,7 +75,7 @@ function createTest(type, name, done) {
 
     createFile({
         name,
-        filePath: `test/${type}/${upperCaseFirstLetter(name)}.spec.js`,
+        filePath: `../../test/${type}/${upperCaseFirstLetter(name)}.spec.js`,
         templateFile: 'generatorTemplates/test.js',
     }, done);
 }
@@ -123,7 +123,7 @@ program
             process.exit(1);
         }
 
-        const dir = `app/components/${upperCaseFirstLetter(name)}`;
+        const dir = `../../app/components/${upperCaseFirstLetter(name)}`;
 
         async.series([
             function(done) {
