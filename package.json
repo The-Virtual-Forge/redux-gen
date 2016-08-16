@@ -11,9 +11,9 @@
   "dependencies": {
     "async": "^2.0.0-rc.6",
     "commander": "^2.9.0",
-    "lodash.template": "^4.2.5"
+    "lodash.template": "^4.2.5",
+    "lodash-inflection": "^1.4.0"
   },
   "devDependencies": {
-    "lodash-inflection": "^1.4.0"
   }
 }
