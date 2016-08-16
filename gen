@@ -52,6 +52,7 @@ function createFile(config, done) {
 
         if (program.debug) {
             console.log(output);
+            done();
         } else {
             fs.writeFile(`${__dirname}/${config.filePath}`, output, done);
         }
@@ -160,7 +161,11 @@ program
         async.series([
             function(done) {
                 console.log(`Creating ${dir}...`);
-                fs.mkdir(`${__dirname}/${dir}`, DIR_MASK, done);
+                if (! program.debug) {
+                    fs.mkdir(`${__dirname}/${dir}`, DIR_MASK, done);
+                } else {
+                    done();
+                }
             },
             function(done) {
                 createComponent(dir, name, done);
