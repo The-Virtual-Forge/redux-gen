@@ -4,10 +4,10 @@ import { shallow } from 'enzyme';
 import React from 'react';
 
 import <%= nameUpper %> from
-    '../../app/components/<%= nameUpper %>/<%= nameUpper %>.js';
+    '../../app/<%= type %>/<%= nameUpper %>/<%= nameUpper %>.js';
 
 const setup = () => ({ wrapper: shallow(<<%= nameUpper %> />) });
 
-describe('<%= nameUpper %> component', () => {
+describe('<%= nameUpper %> <%= typeSingle %>', function() {
     it('should do something');
 });
