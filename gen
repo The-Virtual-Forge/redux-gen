@@ -46,6 +46,7 @@ function createFile(config, done) {
             nameLower: lowerCaseFirstLetter(config.name),
             type: config.type,
             typeSingle: _.singularize(config.type),
+            pathToCodeToBeTested: config.pathToCodeToBeTested || ''
         });
 
         console.log(`Creating ${config.filePath}...`);
@@ -104,11 +105,20 @@ function createTest(type, name, done) {
         type += 's';
     }
 
+    var pathToCodeToBeTested = `${paths.appBase}${type}/`;
+
+    if (type === `components`) {
+        pathToCodeToBeTested += `${upperCaseFirstLetter(name)}/`;
+    }
+
+    pathToCodeToBeTested += `${upperCaseFirstLetter(name)}.js`;
+
     createFile({
         name,
         type,
         filePath: `${paths.testBase}${type}/${upperCaseFirstLetter(name)}.spec.js`,
         templateFile: 'test.js',
+        pathToCodeToBeTested
     }, done);
 }
 
