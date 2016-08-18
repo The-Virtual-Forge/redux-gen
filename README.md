@@ -15,7 +15,7 @@ Feel free to send PRs to help abstraction and configration :)
 
 From project root:
 
-` ./node_modules/redux-gen/gen [options] [cmd]`
+`redux-gen [options] [cmd]`
 
 ## Commands
 
