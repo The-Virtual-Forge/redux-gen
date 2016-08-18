@@ -7,6 +7,9 @@ const template = require('lodash.template');
 var _ = require("lodash");
 _.mixin(require("lodash-inflection"));
 
+const json = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+const version = json.version;
+
 var cmdValue;
 var nameValue;
 
@@ -123,7 +126,7 @@ function createTest(type, name, done) {
 }
 
 program
-    .version('1.0.2')
+    .version(version)
     .option('-d, --debug', 'Log results to console instead of writing to a file');
 
 program
