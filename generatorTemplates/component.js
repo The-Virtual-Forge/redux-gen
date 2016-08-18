@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 
 import styles from './<%= nameUpper %>.css';
 
-class <%= nameUpper %> extends Component {
+export default class <%= nameUpper %> extends Component {
     render() {
         return (
             <div className="ui container">
@@ -15,5 +15,3 @@ class <%= nameUpper %> extends Component {
         );
     }
 }
-
-export default <%= nameUpper %>;
